@@ -4,7 +4,7 @@ def lire_produits(fichier):
     produits = []
     with open(fichier, newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
-        next(reader)  # Pour ignorer l'en-tête si nécessaire
+        next(reader) 
         for row in reader:
             produit = row[0]
             quantite = int(row[1])
@@ -24,7 +24,7 @@ def tri_bulle(produits, critere='prix'): #tri à bulle
                     produits[j], produits[j + 1] = produits[j + 1], produits[j]
     return produits
 
-def menu(): # le menu pour le tri relier au menu interactif
+def tribulle(): # le tribulle pour le tri relier au menu interactif
     fichier = 'produits.csv'
     produits = lire_produits(fichier)
 
@@ -45,7 +45,7 @@ def menu(): # le menu pour le tri relier au menu interactif
         return
     
     for produit in produits_tries:
-        print(f"{produit['produit']} - Quantité : {produit['quantite']} - Prix : {produit['prix']}€")
+        print(f"{produit['produit']}: {produit['quantite']} en stock {produit['prix']} €")
 
 if __name__ == "__main__":
-    menu() 
+    tribulle() 
