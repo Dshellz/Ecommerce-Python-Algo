@@ -1,15 +1,18 @@
 import csv
+from tri_b import menu
+
 with open('produits.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
 
 
 def afficher_menu():
     print("\n=== MENU ===")
-    print("1. Afficher les produits")
-    print("2. Ajouter un nouveau produit")
-    print("3. Supprimer un produit")
-    print("4. Rechercher un produit")
-    print("5. Quitter")
+    print("1| Afficher les produits")
+    print("2| Ajouter un nouveau produit")
+    print("3| Supprimer un produit")
+    print("4| Rechercher un produit")
+    print("5| Trier les produits")
+    print("6| Quitter")
 
 def afficher_produits():
  with open('produits.csv', newline='') as csvfile:
@@ -73,6 +76,8 @@ def menu_principal():
             print("Si le produit n'apparait pas c'est qu'il n'existe pas.")
             recherche_produit(sproduit)
         elif choix == "5":
+            menu()
+        elif choix == "6":
             print("Au revoir !")
             break
         else:
