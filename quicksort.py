@@ -1,5 +1,5 @@
 import csv
-def lire_produits(fichier):
+def lire_produits(fichier): #lire le fichier produits.csv
     produits = []
     with open(fichier, newline='', encoding='utf-8') as csvfile:
             reader = csv.reader(csvfile)
@@ -34,6 +34,6 @@ def triquicksort(): # triquicksort pour l'appeller dans le menu principale
         return
 
     quicksort_et_afficher(produits)
-# Appel du menu
-if __name__ == "__main__":
+
+if __name__ == "__main__": # Appel du menu
     triquicksort()
