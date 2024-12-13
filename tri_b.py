@@ -45,7 +45,7 @@ def tribulle(): # le tribulle pour le tri relier au menu interactif
         return
     
     for produit in produits_tries:
-        print(f"{produit['produit']}: {produit['quantite']} en stock {produit['prix']} €")
+        print(f"{produit['produit']}: {produit['quantite']} en stock Prix = {produit['prix']} €")
 
 if __name__ == "__main__":
     tribulle() 

@@ -21,7 +21,7 @@ def afficher_produits():
         reader = csv.DictReader(csvfile)
         print("\n=== LISTE DES PRODUITS ===")
         for row in reader:
-            print(f"{row['produit']}: Quantité = {row['quantite']}, Prix = {row['prix']} €")
+            print(f"{row['produit']}: {row['quantite']} en stock, Prix = {row['prix']} €")
 
 def ajouter_produit(produit, quantite, prix):
     with open('produits.csv', mode='a', newline='') as file:

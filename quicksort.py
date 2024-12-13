@@ -23,7 +23,7 @@ def quicksort_et_afficher(produits): # tri quicksort
     produits_tries = quicksort_recursive(produits)
     print("\nProduits triés par nom :")
     for produit in produits_tries:
-        print(f"{produit['produit']}: {produit['quantite']} en stock {produit['prix']} €")
+        print(f"{produit['produit']}: {produit['quantite']} en stock Prix = {produit['prix']} €")
 
 def triquicksort(): # triquicksort pour l'appeller dans le menu principale
     fichier = 'produits.csv'
