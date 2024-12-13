@@ -34,14 +34,14 @@ def tribulle(): # le tribulle pour le tri relier au menu interactif
     
     choix = input("Entrez votre choix (1 ou 2) : ")
 
-    if choix == '1':
+    if choix == '1': # Trie par prix ou quantité
         produits_tries = tri_bulle(produits, critere='prix')
         print("Produits triés par prix :")
     elif choix == '2':
         produits_tries = tri_bulle(produits, critere='quantite')
         print("Produits triés par quantité :")
     else:
-        print("Choix invalide. Aucun tri effectué.")
+        print("Choix invalide.")
         return
     
     for produit in produits_tries:
