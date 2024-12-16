@@ -65,13 +65,13 @@ def recherche_produit(sproduit): # Recherche ligne par ligne
 def register():
     with open("users.csv", mode="a", encoding='utf-8', newline="") as f: # Ecrire dans le fichier csv
         writer = csv.writer(f, delimiter=",")
-        email = input("Entrer un email : ")
+        name = input("Entrer un nom : ")
         password = input("Entrer votre mot de passe : ")
         password2 = input("Confirmer votre mot de passe : ")
         
         if password == password2:
             pw_hash = sha256(password.encode('utf-8')).hexdigest()
-            writer.writerow([email,pw_hash])
+            writer.writerow([name,pw_hash])
             print("Votre compte a été créé avec succès ! ")
             f = open("users.csv", mode="a", encoding='utf-8', newline='')
         else:
@@ -80,18 +80,18 @@ def register():
 def login():
     with open("users.csv", mode="r", encoding='utf-8') as file:
         reader = csv.reader(file)
-        email = input("Entrez votre email : ")
+        name = input("Entrez votre nom : ")
         password = input("Entrez votre mot de passe : ")
         for row in  reader:
             reg_name = row[0]
             reg_pass = row[1]
             pw_hash = sha256(password.encode('utf-8')).hexdigest()
-            if pw_hash != reg_pass or email != reg_name:
+            if pw_hash != reg_pass or name != reg_name:
                 check = False
             else: 
                 check = True
-            if row == [email, pw_hash]:
-                print(f"\nBienvenue {email}")
+            if row == [name, pw_hash]:
+                print(f"\nBienvenue {name}")
                 return True
     print("Les informations que vous avez rentrez sont incorrectes !")
     choix = input("1| Se créer un compte\n2| Se connecter\n ") 
