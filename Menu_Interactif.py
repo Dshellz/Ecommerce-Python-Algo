@@ -1,6 +1,7 @@
 import csv
 from quicksort import triquicksort
 from tri_b import tribulle
+from hashlib import sha256
 
 with open('produits.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
@@ -14,7 +15,8 @@ def afficher_menu(): # Affichage menu avec les options
     print("4| Rechercher un produit")
     print("5| Trier les produits")
     print("6| Trier les noms de produits")
-    print("7| Quitter")
+    print("7| Se connecter")
+    print("8| Quitter")
 
 def afficher_produits(): # affichier les produits du fichier.csv
  with open('produits.csv', newline='') as csvfile:
@@ -59,7 +61,52 @@ def recherche_produit(sproduit): # Recherche ligne par ligne
             if sproduit.lower() in ligne[0].lower(): 
                 print(f"Produit trouvé : {ligne}")
                 break
-    
+
+def register():
+    with open("users.csv", mode="a", encoding='utf-8', newline="") as f: # Ecrire dans le fichier csv
+        writer = csv.writer(f, delimiter=",")
+        email = input("Entrer un email : ")
+        password = input("Entrer votre mot de passe : ")
+        password2 = input("Confirmer votre mot de passe : ")
+        
+        if password == password2:
+            pw_hash = sha256(password.encode('utf-8')).hexdigest()
+            writer.writerow([email,pw_hash])
+            print("Votre compte a été créé avec succès ! ")
+            f = open("users.csv", mode="a", encoding='utf-8', newline='')
+        else:
+            print("Invalide, veuillez réessayer")
+
+def login():
+    with open("users.csv", mode="r", encoding='utf-8') as file:
+        reader = csv.reader(file)
+        email = input("Entrez votre email : ")
+        password = input("Entrez votre mot de passe : ")
+        for row in  reader:
+            reg_name = row[0]
+            reg_pass = row[1]
+            pw_hash = sha256(password.encode('utf-8')).hexdigest()
+            if pw_hash != reg_pass or email != reg_name:
+                check = False
+            else: 
+                check = True
+            if row == [email, pw_hash]:
+                print(f"\nBienvenue {email}")
+                return True
+    print("Les informations que vous avez rentrez sont incorrectes !")
+    choix = input("1| Se créer un compte\n2| Se connecter\n ") 
+    if choix == "1":
+        register()
+    elif choix =="2":
+        login()
+    return afficher_menu()
+
+choix = input("1| Se créer un compte\n2| Se connecter\n ")
+if choix == "1":
+    register()
+elif choix =="2":
+    login()
+
 def menu_principal(): # Menu Principale
     while True:
         afficher_menu()
@@ -81,7 +128,9 @@ def menu_principal(): # Menu Principale
             tribulle()
         elif choix == "6":
             triquicksort()
-        elif choix == "7":
+        elif choix =="7":
+            login()
+        elif choix == "8":
             print("Au revoir !")
             break
         else:
