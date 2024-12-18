@@ -1,4 +1,5 @@
 import csv
+import pandas as pd
 def lire_produits(fichier): #lire le fichier produits.csv
     produits = []
     with open(fichier, newline='', encoding='utf-8') as csvfile:

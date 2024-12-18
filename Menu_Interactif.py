@@ -3,6 +3,8 @@ from quicksort import triquicksort
 from tri_b import tribulle
 import hashlib
 import requests
+import string
+import random
 
 with open('produits.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
@@ -63,14 +65,19 @@ def recherche_produit(sproduit): # Recherche ligne par ligne
                 print(f"Produit trouvé : {ligne}")
                 break
 
+def genere_salage(lenght=16):
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=lenght))
+    
 def register():
-    with open("users.csv", mode="a", encoding='utf-8', newline="") as f: # Ecrire dans le fichier csv
+    with open("users.csv", mode="a", encoding='utf-8', newline="") as f:
         writer = csv.writer(f, delimiter=",")
         name = input("Entrer un nom : ")
         password = input("Entrer votre mot de passe : ")
         password2 = input("Confirmer votre mot de passe : ")
         if password == password2:
-            pw_hash = hashlib.sha1(password.encode('utf-8')).hexdigest().upper()
+            salt = genere_salage()
+            password_salage = password + salt
+            pw_hash = hashlib.sha1(password_salage.encode('utf-8')).hexdigest().upper()
             prefix = pw_hash[:5]
             suffix = pw_hash[5:] 
 
@@ -85,13 +92,14 @@ def register():
                 if returned_suffix == suffix:
                     print(f"Mot de passe trop peu sécurisé ! Il à été compromis {count} fois.\nVeuillez mettre un mot de passe plus sécurisé.")
                     found = True
+                    return register()
             if not found :
                 print("Mot de passe sécurisé (aucunes traces de fuites de données de ce mot de passe).")
-                writer.writerow([name,pw_hash])
+                writer.writerow([name,pw_hash,salt])
                 print("Votre compte a été créé avec succès ! ")
                 f = open("users.csv", mode="a", encoding='utf-8', newline='')
         else:
-            print("Invalide, veuillez réessayer")
+            print("Les mots de passes ne correspondent pas. Veuillez réessayer")
 
 
 def login():
@@ -102,12 +110,10 @@ def login():
         for row in reader:
             reg_name = row[0]
             reg_pass = row[1]
-            pw_hash = hashlib.sha1(password.encode('utf-8')).hexdigest().upper()
-            if pw_hash != reg_pass or name != reg_name:
-                check = False
-            else: 
-                check = True
-            if row == [name, pw_hash]:
+            salt_stocker = row[2]
+            password_salage = password + salt_stocker
+            pw_hash = hashlib.sha1(password_salage.encode('utf-8')).hexdigest().upper()
+            if pw_hash == reg_pass and name == reg_name:
                 print(f"\nBienvenue {name}")
                 return True
     print("Les informations que vous avez rentrez sont incorrectes !")
