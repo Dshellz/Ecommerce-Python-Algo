@@ -1,7 +1,14 @@
 import csv
 from quicksort import triquicksort
 from tri_b import tribulle
+<<<<<<< Updated upstream
 from hashlib import sha256
+=======
+import hashlib
+import requests # type: ignore
+import string
+import random
+>>>>>>> Stashed changes
 
 with open('produits.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
