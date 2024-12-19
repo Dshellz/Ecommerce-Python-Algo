@@ -1,10 +1,10 @@
 import csv
 from quicksort import triquicksort
-from tri_b import tribulle
 import hashlib
 import requests
 import string
 import random
+from tri_b import produits_trie
 from logging_log import creer_compte, connection, ajout_prod
 import pandas as pd
 from commercants import filtre_nom
@@ -71,7 +71,7 @@ def recherche_produit(sproduit): # Recherche ligne par ligne
 
 def genere_salage(lenght=16):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=lenght))
-    
+
 def register():
     with open("users.csv", mode="a", encoding='utf-8', newline="") as f:
         writer = csv.writer(f, delimiter=",")
@@ -155,7 +155,7 @@ def menu_principal(): # Menu Principale
             print("Si le produit n'apparait pas c'est qu'il n'existe pas.")
             recherche_produit(sproduit)
         elif choix == "5":
-            tribulle()
+            print(produits_trie)
         elif choix == "6":
             triquicksort()
         elif choix =="7":
