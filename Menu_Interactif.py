@@ -7,7 +7,7 @@ import string
 import random
 from log import log
 import pandas as pd
-
+from commercants import filtre_nom
 with open('produits.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
 
@@ -138,31 +138,48 @@ if choix == "1":
 elif choix =="2":
     login()
 
-def filtre_nom():
-    choix = input("Vous souhaitez voir les produits appartenants à un commerçants sur la plateforme ? oui/non : ")
-    if choix.lower() == "oui":
-        df = pd.read_csv('produits.csv', usecols=['nom'])
-        print("Liste des commerçants\n")
-        commercants = df['nom'].unique()
-        for commercant in commercants:
-            print(commercants)
-        choix_commercant = input("\nRechercher un commerçant en indiquant son nom : ").strip()
-        commercants_lower = [commerçant.lower() for commerçant in commercants]
-        if choix_commercant in commercants_lower:
-            index_commercant = commercants_lower.index(choix_commercant)
-            commercant_exact = commercants[index_commercant]
-            print(f"Vous avez choisi le commerçant : {commercant_exact}")
-            df_produits = pd.read_csv('produits.csv')
-            produits_commercant = df_produits[df_produits['nom'] == commercant_exact]
+import pandas as pd
 
-            if not produits_commercant.empty:
-                print(f"Les produits de {commercant_exact} :")
-                print(produits_commercant)
-            else:
-                print(f"Aucun produit trouvé pour {commercant_exact}.")
-        else:
-            print(f"Le commerçant n'a pas été trouvé.")
-            filtre_nom()
+# def filtre_nom():
+#     choix = input("Vous souhaitez voir les produits appartenants à un commerçant sur la plateforme ? oui/non : ")
+#     if choix.lower() == "oui":
+#         try:
+#             df = pd.read_csv('produits.csv', usecols=['nom'])
+#         except FileNotFoundError:
+#             print("Le fichier 'produits.csv' est introuvable. Assurez-vous qu'il est dans le bon répertoire.")
+#             return
+#         except Exception as e:
+#             print(f"Une erreur est survenue lors de la lecture du fichier : {e}")
+#             return
+        
+#         print("\nListe des commerçants :")
+#         commercants = df['nom'].dropna().unique()
+#         for commercant in commercants:
+#             print(f"- {commercant}")
+        
+#         choix_commercant = input("\nRechercher un commerçant en indiquant son nom : ").strip().lower()
+#         commercants_lower = [commercant.lower() for commercant in commercants]
+        
+#         if choix_commercant in commercants_lower:
+#             index_commercant = commercants_lower.index(choix_commercant)
+#             commercant_exact = commercants[index_commercant]
+#             print(f"\nVous avez choisi le commerçant : {commercant_exact}")
+            
+#             try:
+#                 df_produits = pd.read_csv('produits.csv')
+#                 produits_commercant = df_produits[df_produits['nom'] == commercant_exact]
+                
+#                 if not produits_commercant.empty:
+#                     print(f"\nLes produits de {commercant_exact} :")
+#                     print(produits_commercant)
+#                 else:
+#                     print(f"\nAucun produit trouvé pour {commercant_exact}.")
+#             except Exception as e:
+#                 print(f"Une erreur est survenue lors de la lecture des produits : {e}")
+#         else:
+#             print("\nLe commerçant n'a pas été trouvé. Vérifiez l'orthographe ou essayez un autre nom.")
+#     else:
+#         print("Opération annulée.")
 
 def menu_principal(): # Menu Principale
     while True:
