@@ -5,7 +5,7 @@ import hashlib
 import requests
 import string
 import random
-from log import log
+from logging_log import creer_compte, connection, ajout_prod
 import pandas as pd
 from commercants import filtre_nom
 with open('produits.csv', newline='') as csvfile:
@@ -35,6 +35,7 @@ def ajouter_produit(nom, produit, quantite, prix): # Ajout d'un produit
     with open('produits.csv', mode='a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow([nom ,produit, quantite, prix])
+        ajout_prod(nom, produit, quantite, prix) # Pour les logs
 
 def supprimer_produit(): # Suppression d'un produit
     produit_a_supprimer = input("Entrez le nom du produit à supprimer : ")
@@ -99,11 +100,8 @@ def register():
             if not found :
                 print("Mot de passe sécurisé (aucunes traces de fuites de données de ce mot de passe).")
                 writer.writerow([name,pw_hash,salt])
-                
-                print("Votre compte a été créé avec succès ! ")
-                f = open("users.csv", mode="a", encoding='utf-8', newline='')
-                return log('users.csv', 'log_requests.csv')
-                
+                creer_compte(name) # Pour les logs
+                print("Votre compte a été créé avec succès ! ")              
         else:
             print("Les mots de passes ne correspondent pas. Veuillez réessayer")
             return register()
@@ -121,9 +119,9 @@ def login():
             password_salage = password + salt_stocker
             pw_hash = hashlib.sha1(password_salage.encode('utf-8')).hexdigest().upper()
             if pw_hash == reg_pass and name == reg_name:
+                connection(name) # Pour les logs
                 print(f"\nBienvenue {name}")
                 return True
-            return log('users.csv', 'log_requests.csv')
     print("Les informations que vous avez rentrez sont incorrectes !")
     choix = input("1| Se créer un compte\n2| Se connecter\n ") 
     if choix == "1":
@@ -137,49 +135,6 @@ if choix == "1":
     register()
 elif choix =="2":
     login()
-
-import pandas as pd
-
-# def filtre_nom():
-#     choix = input("Vous souhaitez voir les produits appartenants à un commerçant sur la plateforme ? oui/non : ")
-#     if choix.lower() == "oui":
-#         try:
-#             df = pd.read_csv('produits.csv', usecols=['nom'])
-#         except FileNotFoundError:
-#             print("Le fichier 'produits.csv' est introuvable. Assurez-vous qu'il est dans le bon répertoire.")
-#             return
-#         except Exception as e:
-#             print(f"Une erreur est survenue lors de la lecture du fichier : {e}")
-#             return
-        
-#         print("\nListe des commerçants :")
-#         commercants = df['nom'].dropna().unique()
-#         for commercant in commercants:
-#             print(f"- {commercant}")
-        
-#         choix_commercant = input("\nRechercher un commerçant en indiquant son nom : ").strip().lower()
-#         commercants_lower = [commercant.lower() for commercant in commercants]
-        
-#         if choix_commercant in commercants_lower:
-#             index_commercant = commercants_lower.index(choix_commercant)
-#             commercant_exact = commercants[index_commercant]
-#             print(f"\nVous avez choisi le commerçant : {commercant_exact}")
-            
-#             try:
-#                 df_produits = pd.read_csv('produits.csv')
-#                 produits_commercant = df_produits[df_produits['nom'] == commercant_exact]
-                
-#                 if not produits_commercant.empty:
-#                     print(f"\nLes produits de {commercant_exact} :")
-#                     print(produits_commercant)
-#                 else:
-#                     print(f"\nAucun produit trouvé pour {commercant_exact}.")
-#             except Exception as e:
-#                 print(f"Une erreur est survenue lors de la lecture des produits : {e}")
-#         else:
-#             print("\nLe commerçant n'a pas été trouvé. Vérifiez l'orthographe ou essayez un autre nom.")
-#     else:
-#         print("Opération annulée.")
 
 def menu_principal(): # Menu Principale
     while True:
