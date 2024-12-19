@@ -5,6 +5,8 @@ import hashlib
 import requests
 import string
 import random
+from log import log
+import pandas as pd
 
 with open('produits.csv', newline='') as csvfile:
     reader = csv.DictReader(csvfile)
@@ -19,19 +21,20 @@ def afficher_menu(): # Affichage menu avec les options
     print("5| Trier les produits")
     print("6| Trier les noms de produits")
     print("7| Se connecter")
-    print("8| Quitter")
+    print("8| Afficher les commerçants")
+    print("9| Quitter")
 
 def afficher_produits(): # affichier les produits du fichier.csv
  with open('produits.csv', newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         print("\n=== LISTE DES PRODUITS ===")
         for row in reader:
-            print(f"{row['produit']}: {row['quantite']} en stock, Prix = {row['prix']} €")
+            print(f"Commerçant : {row['nom']} : {row['produit']} {row['quantite']} en stock Prix = {row['prix']} €")
 
-def ajouter_produit(produit, quantite, prix): # Ajout d'un produit 
+def ajouter_produit(nom, produit, quantite, prix): # Ajout d'un produit 
     with open('produits.csv', mode='a', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow([produit, quantite, prix])
+        writer.writerow([nom ,produit, quantite, prix])
 
 def supprimer_produit(): # Suppression d'un produit
     produit_a_supprimer = input("Entrez le nom du produit à supprimer : ")
@@ -96,10 +99,14 @@ def register():
             if not found :
                 print("Mot de passe sécurisé (aucunes traces de fuites de données de ce mot de passe).")
                 writer.writerow([name,pw_hash,salt])
+                
                 print("Votre compte a été créé avec succès ! ")
                 f = open("users.csv", mode="a", encoding='utf-8', newline='')
+                return log('users.csv', 'log_requests.csv')
+                
         else:
             print("Les mots de passes ne correspondent pas. Veuillez réessayer")
+            return register()
 
 
 def login():
@@ -116,6 +123,7 @@ def login():
             if pw_hash == reg_pass and name == reg_name:
                 print(f"\nBienvenue {name}")
                 return True
+            return log('users.csv', 'log_requests.csv')
     print("Les informations que vous avez rentrez sont incorrectes !")
     choix = input("1| Se créer un compte\n2| Se connecter\n ") 
     if choix == "1":
@@ -130,6 +138,32 @@ if choix == "1":
 elif choix =="2":
     login()
 
+def filtre_nom():
+    choix = input("Vous souhaitez voir les produits appartenants à un commerçants sur la plateforme ? oui/non : ")
+    if choix.lower() == "oui":
+        df = pd.read_csv('produits.csv', usecols=['nom'])
+        print("Liste des commerçants\n")
+        commercants = df['nom'].unique()
+        for commercant in commercants:
+            print(commercants)
+        choix_commercant = input("\nRechercher un commerçant en indiquant son nom : ").strip()
+        commercants_lower = [commerçant.lower() for commerçant in commercants]
+        if choix_commercant in commercants_lower:
+            index_commercant = commercants_lower.index(choix_commercant)
+            commercant_exact = commercants[index_commercant]
+            print(f"Vous avez choisi le commerçant : {commercant_exact}")
+            df_produits = pd.read_csv('produits.csv')
+            produits_commercant = df_produits[df_produits['nom'] == commercant_exact]
+
+            if not produits_commercant.empty:
+                print(f"Les produits de {commercant_exact} :")
+                print(produits_commercant)
+            else:
+                print(f"Aucun produit trouvé pour {commercant_exact}.")
+        else:
+            print(f"Le commerçant n'a pas été trouvé.")
+            filtre_nom()
+
 def menu_principal(): # Menu Principale
     while True:
         afficher_menu()
@@ -137,10 +171,11 @@ def menu_principal(): # Menu Principale
         if choix == "1":
             afficher_produits()
         elif choix == "2":
+            nom = input("Entrer votre nom : ")
             produit = input("Entrer un nom de produit : ")
             quantite = int(input("Entrer la quantite : "))
             prix = float(input("Entrer un prix : "))
-            ajouter_produit(produit, quantite, prix)
+            ajouter_produit(nom, produit, quantite, prix)
         elif choix == "3":
             supprimer_produit()
         elif choix == "4":
@@ -153,7 +188,9 @@ def menu_principal(): # Menu Principale
             triquicksort()
         elif choix =="7":
             login()
-        elif choix == "8":
+        elif choix =="8":
+            filtre_nom()
+        elif choix == "9":
             print("Au revoir !")
             break
         else:

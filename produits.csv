@@ -1,6 +1,6 @@
-produit,quantite,prix
-Piano,14,749.99
-Guitare,7,249.99
-Batterie,20,499.99
-Violon,30,149.99
-
+nom,produit,quantite,prix
+Marie,Piano,14,749.99
+Marie,Guitare,7,249.99
+Marie,Batterie,20,499.99
+Julien,Violon,30,149.99
+George,Harmonica,5,26.99

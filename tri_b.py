@@ -1,14 +1,13 @@
 import csv
-import pandas as pd
 def lire_produits(fichier):
     produits = []
     with open(fichier, newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
         next(reader) 
         for row in reader:
-            produit = row[0]
-            quantite = int(row[1])
-            prix = float(row[2])
+            produit = row[1]
+            quantite = int(row[2])
+            prix = float(row[3])
             produits.append({'produit': produit, 'quantite': quantite, 'prix': prix})
     return produits
 
