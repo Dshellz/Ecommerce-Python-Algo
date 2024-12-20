@@ -148,6 +148,44 @@ def main():
 if __name__ == "__main__":
     main()
 
+def change_pw():
+    email = input("Entrez votre email : ")
+    old_password = input("Entrez votre ancien mot de passe : ")
+
+    with open("users.csv", mode="r", encoding='utf-8') as file:
+        rows = list(csv.reader(file))
+    for row in rows:
+        reg_name = row[0]
+        reg_pass = row[1]
+        
+        if email == reg_name:
+            pw_hash = hashlib.sha1(old_password.encode('utf-8')).hexdigest().upper()
+            if pw_hash == reg_pass:
+                print("Ancien mot de passe validé.")
+                
+                new_password = input("Entrez votre nouveau mot de passe : ")
+                new_password2 = input("Confirmez votre nouveau mot de passe : ")
+                
+                if new_password == new_password2:
+                    salt = genere_salage()
+                    pw_hash = hashlib.sha1(new_password.encode('utf-8')).hexdigest().upper()
+                    
+                    with open("users.csv", mode="w", encoding='utf-8', newline="") as file:
+                        writer = csv.writer(file, delimiter=",")
+                        for r in rows:
+                            if r[0] == email:
+                                writer.writerow([r[0], pw_hash, salt])
+                            else:
+                                writer.writerow(r)
+                    
+                    print("Votre mot de passe a été modifié avec succès !")
+                    return True
+                else:
+                    print("Les mots de passe ne correspondent pas. Veuillez réessayer.")
+                    return change_pw()
+    print("Email ou mot de passe incorrect.")
+    return False
+
 def menu_principal(): # Menu Principale
     while True:
         afficher_menu()
@@ -172,8 +210,8 @@ def menu_principal(): # Menu Principale
             quicksort_prix()
         elif choix =="7":
             filtre_nom()
-        # elif choix == "8":
-        #     changermdp()
+        elif choix == "8":
+            change_pw()
         elif choix == "9":
             print("Au revoir !")
             break

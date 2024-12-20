@@ -47,3 +47,8 @@
 2024-12-20 12:12:28 - INFO - Creation de compte pour l'utilisateur : david@mail.fr
 2024-12-20 12:13:14 - INFO - Connection d'un utilisateur : david@mail.fr
 2024-12-20 12:41:41 - WARNING - Erreur de creation de compte ! Mot de passe trop faible.
+2024-12-20 13:10:18 - INFO - Creation de compte pour l'utilisateur : Tutur@gmail.com
+2024-12-20 13:11:04 - INFO - Connection d'un utilisateur : david@mail.fr
+2024-12-20 13:12:01 - WARNING - Erreur de creation de compte ! Mot de passe trop faible.
+2024-12-20 13:12:18 - INFO - Creation de compte pour l'utilisateur : hop@gmail.com
+2024-12-20 13:12:31 - INFO - Connection d'un utilisateur : hop@gmail.com
