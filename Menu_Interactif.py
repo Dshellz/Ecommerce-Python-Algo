@@ -18,11 +18,10 @@ def afficher_menu(): # Affichage menu avec les options
     print("2| Ajouter un nouveau produit")
     print("3| Supprimer un produit")
     print("4| Rechercher un produit")
-    print("5| Trier les produits")
-    print("6| Trier les noms de produits")
-    print("7| Se connecter")
-    print("8| Afficher les commerçants")
-    print("9| Quitter")
+    print("5| Trier les produits par nom (tribulle)")
+    print("6| Trier les noms de produits (quicksort)")
+    print("7| Afficher les commerçants")
+    print("8| Quitter")
 
 def afficher_produits(): # affichier les produits du fichier.csv
  with open('produits.csv', newline='') as csvfile:
@@ -80,8 +79,8 @@ def register():
         password2 = input("Confirmer votre mot de passe : ")
         if password == password2:
             salt = genere_salage()
-            password_salage = password + salt
-            pw_hash = hashlib.sha1(password_salage.encode('utf-8')).hexdigest().upper()
+            # password_salage = password + salt
+            pw_hash = hashlib.sha1(password.encode('utf-8')).hexdigest().upper()
             prefix = pw_hash[:5]
             suffix = pw_hash[5:] 
 
@@ -116,25 +115,33 @@ def login():
             reg_name = row[0]
             reg_pass = row[1]
             salt_stocker = row[2]
-            password_salage = password + salt_stocker
-            pw_hash = hashlib.sha1(password_salage.encode('utf-8')).hexdigest().upper()
+            # password_salage = password + salt_stocker
+            pw_hash = hashlib.sha1(password.encode('utf-8')).hexdigest().upper()
             if pw_hash == reg_pass and name == reg_name:
                 connection(name) # Pour les logs
                 print(f"\nBienvenue {name}")
                 return True
     print("Les informations que vous avez rentrez sont incorrectes !")
-    choix = input("1| Se créer un compte\n2| Se connecter\n ") 
-    if choix == "1":
-        register()
-    elif choix =="2":
-        login()
-    return afficher_menu()
+    return False
+def main():
+    choix_initial = input("1 | Se connecter\n2 | Créer un compte\nChoisissez une option : ")
 
-choix = input("1| Se créer un compte\n2| Se connecter\n ")
-if choix == "1":
-    register()
-elif choix =="2":
-    login()
+    if choix_initial == "1":
+        if login():
+            pass
+        else:
+            print("Impossible de se connecter. Réessayez.")
+            main()
+    elif choix_initial == "2":
+        register()
+        main()
+    else:
+        print("Choix invalide. Entrer 1 pour se connecter ou 2 pour créer un compte.")
+        main()
+
+
+if __name__ == "__main__":
+    main()
 
 def menu_principal(): # Menu Principale
     while True:
@@ -159,10 +166,8 @@ def menu_principal(): # Menu Principale
         elif choix == "6":
             triquicksort()
         elif choix =="7":
-            login()
-        elif choix =="8":
             filtre_nom()
-        elif choix == "9":
+        elif choix == "8":
             print("Au revoir !")
             break
         else:
