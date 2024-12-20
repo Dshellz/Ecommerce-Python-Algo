@@ -1,11 +1,11 @@
 import csv
-from quicksort import triquicksort
+from quicksort import df_sorted
 import hashlib
 import requests
 import string
 import random
 from tri_b import produits_trie
-from logging_log import creer_compte, connection, ajout_prod
+from logging_log import creer_compte, connection, ajout_prod, mdp_compromis
 import pandas as pd
 from commercants import filtre_nom
 with open('produits.csv', newline='') as csvfile:
@@ -18,10 +18,11 @@ def afficher_menu(): # Affichage menu avec les options
     print("2| Ajouter un nouveau produit")
     print("3| Supprimer un produit")
     print("4| Rechercher un produit")
-    print("5| Trier les produits par nom (tribulle)")
-    print("6| Trier les noms de produits (quicksort)")
-    print("7| Afficher les commerçants")
-    print("8| Quitter")
+    print("5| Trier les produits par nom")
+    print("6| Trier les produits par prix")
+    print("7| Rechercher un commerçants")
+    print("8| Modifier votre mot de passe")
+    print("9| Quitter")
 
 def afficher_produits(): # affichier les produits du fichier.csv
  with open('produits.csv', newline='') as csvfile:
@@ -60,6 +61,9 @@ def supprimer_produit(): # Suppression d'un produit
         for produit in produits_restants:
             writer.writerow(produit)
 
+def quicksort_prix():
+    print(df_sorted)
+
 def recherche_produit(sproduit): # Recherche ligne par ligne
     with open("produits.csv", "r", newline='', encoding='utf-8') as fichier:
         donnee = list(csv.reader(fichier, delimiter=";"))
@@ -74,7 +78,7 @@ def genere_salage(lenght=16):
 def register():
     with open("users.csv", mode="a", encoding='utf-8', newline="") as f:
         writer = csv.writer(f, delimiter=",")
-        name = input("Entrer un nom : ")
+        email = input("Entrer un email : ")
         password = input("Entrer votre mot de passe : ")
         password2 = input("Confirmer votre mot de passe : ")
         if password == password2:
@@ -95,11 +99,12 @@ def register():
                 if returned_suffix == suffix:
                     print(f"Mot de passe trop peu sécurisé ! Il à été compromis {count} fois.\nVeuillez mettre un mot de passe plus sécurisé.")
                     found = True
+                    mdp_compromis() # Pour les logs 
                     return register()
             if not found :
                 print("Mot de passe sécurisé (aucunes traces de fuites de données de ce mot de passe).")
-                writer.writerow([name,pw_hash,salt])
-                creer_compte(name) # Pour les logs
+                writer.writerow([email,pw_hash,salt])
+                creer_compte(email) # Pour les logs
                 print("Votre compte a été créé avec succès ! ")              
         else:
             print("Les mots de passes ne correspondent pas. Veuillez réessayer")
@@ -109,17 +114,17 @@ def register():
 def login():
     with open("users.csv", mode="r", encoding='utf-8') as file:
         reader = csv.reader(file)
-        name = input("Entrez votre nom : ")
+        email = input("Entrez votre email : ")
         password = input("Entrez votre mot de passe : ")
         for row in reader:
             reg_name = row[0]
             reg_pass = row[1]
-            salt_stocker = row[2]
+            # salt_stocker = row[2] 
             # password_salage = password + salt_stocker
             pw_hash = hashlib.sha1(password.encode('utf-8')).hexdigest().upper()
-            if pw_hash == reg_pass and name == reg_name:
-                connection(name) # Pour les logs
-                print(f"\nBienvenue {name}")
+            if pw_hash == reg_pass and email == reg_name:
+                connection(email) # Pour les logs
+                print(f"\nBienvenue {email}")
                 return True
     print("Les informations que vous avez rentrez sont incorrectes !")
     return False
@@ -164,10 +169,12 @@ def menu_principal(): # Menu Principale
         elif choix == "5":
             print(produits_trie)
         elif choix == "6":
-            triquicksort()
+            quicksort_prix()
         elif choix =="7":
             filtre_nom()
-        elif choix == "8":
+        # elif choix == "8":
+        #     changermdp()
+        elif choix == "9":
             print("Au revoir !")
             break
         else:

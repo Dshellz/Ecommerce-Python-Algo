@@ -36,3 +36,14 @@
 2024-12-20 01:44:47 - INFO - Connection d'un utilisateur : Gerard
 2024-12-20 01:46:32 - INFO - Creation de compte pour l'utilisateur : Thomas
 2024-12-20 01:46:45 - INFO - Connection d'un utilisateur : Thomas
+2024-12-20 11:23:56 - INFO - Creation de compte pour l'utilisateur : Test2
+2024-12-20 11:38:05 - WARNING - Erreur de creation de compte ! 
+2024-12-20 11:38:29 - WARNING - Erreur de creation de compte ! 
+2024-12-20 11:38:55 - WARNING - Erreur de creation de compte ! 
+2024-12-20 11:41:53 - INFO - Connection d'un utilisateur : Gerard
+2024-12-20 11:56:08 - INFO - Connection d'un utilisateur : Gerard
+2024-12-20 11:57:09 - INFO - Connection d'un utilisateur : Gerard
+2024-12-20 12:02:30 - INFO - Connection d'un utilisateur : Gerard
+2024-12-20 12:12:28 - INFO - Creation de compte pour l'utilisateur : david@mail.fr
+2024-12-20 12:13:14 - INFO - Connection d'un utilisateur : david@mail.fr
+2024-12-20 12:41:41 - WARNING - Erreur de creation de compte ! Mot de passe trop faible.

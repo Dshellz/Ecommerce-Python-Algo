@@ -14,3 +14,6 @@ def connection(userlog):
 
 def ajout_prod(nom, produit, quantite, prix):
     logging.info(f"Ajout de {quantite} {produit} au prix de {prix} de {nom}")
+
+def mdp_compromis():
+    logging.warning(f"Erreur de creation de compte ! Mot de passe trop faible.")
