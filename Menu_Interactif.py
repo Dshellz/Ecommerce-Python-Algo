@@ -1,5 +1,4 @@
 import csv
-from quicksort import df_sorted
 import hashlib
 import requests
 import string
@@ -82,7 +81,7 @@ def login(email_entry, password_entry, result_label):
 def show_main_menu():
     main_menu_window = tk.Toplevel()
     main_menu_window.title("Menu Principal")
-    main_menu_window.geometry("350x120")
+    main_menu_window.geometry("350x250")
 
     def afficher_produits():
         show_prod = tk.Tk()
@@ -116,6 +115,7 @@ def show_main_menu():
             ajouter_window.destroy()
 
         ajouter_window = tk.Toplevel(main_menu_window)
+        ajouter_window.geometry("270x190")
         ajouter_window.title("Ajouter un produit")
         
         tk.Label(ajouter_window, text="Nom du commerçant:").pack()
@@ -134,48 +134,97 @@ def show_main_menu():
         prix_entry = tk.Entry(ajouter_window)
         prix_entry.pack()
 
-        tk.Button(ajouter_window, text="Ajouter", command=save_product).pack()
+    def supprimer_produit():
+        def confirmer_suppression():
+            produit_a_supprimer = produit_entry.get()
+            produits_restants = []
+            produit_trouve = False
 
-    tk.Button(main_menu_window, text="Afficher les produits", command=afficher_produits).pack()
+            with open('produits.csv', newline='') as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    if row['produit'] != produit_a_supprimer:
+                        produits_restants.append(row)
+                    else:
+                        produit_trouve = True
+            
+            if produit_trouve:
+                with open('produits.csv', 'w', newline='') as csvfile:
+                    fieldnames = ['nom', 'produit', 'quantite', 'prix']
+                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                    writer.writeheader()
+                    for produit in produits_restants:
+                        writer.writerow(produit)
+                messagebox.showinfo("Succès", f"Le produit '{produit_a_supprimer}' a été supprimé.")
+                supprimer_window.destroy()
+            else:
+                messagebox.showerror("Erreur", f"Produit '{produit_a_supprimer}' non trouvé.")
+        
+        supprimer_window = tk.Toplevel(main_menu_window)
+        supprimer_window.geometry("250x85")
+        supprimer_window.title("Supprimer un produit")
+        
+        tk.Label(supprimer_window, text="Nom du produit à supprimer:").pack()
+        produit_entry = tk.Entry(supprimer_window)
+        produit_entry.pack()
+        tk.Button(supprimer_window, text="Supprimer", command=confirmer_suppression).pack()
 
-    tk.Button(main_menu_window, text="Ajouter un produit", command=ajouter_produit).pack()
-    # tk.Button(main_menu_window) text="Supprimer un produit", command=supprimer_produit).pack()
-    tk.Button(main_menu_window, text="Quitter", command=main_menu_window.destroy).pack()
+    def trier_par_prix():
+        try:
+            df = pd.read_csv('produits.csv', on_bad_lines='skip')
+            df_sorted = df.sort_values(by="prix", ascending=True, kind="quicksort")
+            
+            trier_window = tk.Toplevel(main_menu_window)
+            trier_window.title("Produits triés par prix")
+            trier_window.geometry("450x250")
 
-# def supprimer_produit(): # Suppression d'un produit
-#     produit_a_supprimer = input("Entrez le nom du produit à supprimer : ")
-#     produits_restants = []
-#     produit_trouve = False
+            text_area = tk.Text(trier_window, height=15, width=50)
+            text_area.pack(padx=10, pady=10)
+
+            produits_tries = []
+            for _, row in df_sorted.iterrows():
+                produits_tries.append(f"{row['nom']}: {row['produit']}: {row['quantite']} en stock, Prix = {row['prix']} €")
+            
+            text_area.delete(1.0, tk.END)
+            text_area.insert(tk.END, "\n".join(produits_tries))
+        except Exception as e:
+            messagebox.showerror("Erreur", f"Une erreur est survenue : {e}")    
     
-#     with open('produits.csv', newline='') as csvfile: # Cherche si le produit demander existe
-#         reader = csv.DictReader(csvfile)
-#         for row in reader:
-#             if row['produit'] != produit_a_supprimer:
-#                 produits_restants.append(row)
-#             else:
-#                 produit_trouve = True
-#     if produit_trouve:
-#         print(f"Le produit '{produit_a_supprimer}' a été supprimé.")
-#     else:
-#         print(f"Produit '{produit_a_supprimer}' non trouvé.")
-#         return
-#     with open('produits.csv', 'w', newline='') as csvfile: # Réecriture du fichier produits.csv avec les produits restants
-#         fieldnames = ['produit', 'quantite', 'prix']
-#         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-#         writer.writeheader()
-#         for produit in produits_restants:
-#             writer.writerow(produit)
+    def recherche_produit():
+        def effectuer_recherche():
+            sproduit = produit_entry.get().lower()
+            produit_trouve = False
 
-# def quicksort_prix():
-#     print(df_sorted)
+            with open("produits.csv", "r", newline='', encoding='utf-8') as fichier:
+                donnee = list(csv.reader(fichier, delimiter=";"))
+                for ligne in donnee:
+                    if sproduit in ligne[0].lower():  # Recherche par le nom du produit
+                        produit_trouve = True
+                        messagebox.showinfo("Produit trouvé", f"Produit trouvé : {ligne}")
+                        break
+            
+            if not produit_trouve:
+                messagebox.showerror("Erreur", f"Aucun produit correspondant à '{sproduit}' n'a été trouvé.")
 
-# def recherche_produit(sproduit): # Recherche ligne par ligne
-#     with open("produits.csv", "r", newline='', encoding='utf-8') as fichier:
-#         donnee = list(csv.reader(fichier, delimiter=";"))
-#         for ligne in donnee:
-#             if sproduit.lower() in ligne[0].lower(): 
-#                 print(f"Produit trouvé : {ligne}")
-#                 break
+        recherche_window = tk.Toplevel(main_menu_window)
+        recherche_window.title("Recherche de produit")
+        recherche_window.geometry("300x150")
+        
+        tk.Label(recherche_window, text="Nom du produit à rechercher:").pack(pady=5)
+        produit_entry = tk.Entry(recherche_window)
+        produit_entry.pack(pady=5)
+        tk.Button(recherche_window, text="Rechercher", command=effectuer_recherche).pack(pady=10)
+
+
+    tk.Button(main_menu_window, text="Afficher les produits", command=afficher_produits).pack(pady=5)
+    tk.Button(main_menu_window, text="Ajouter un produit", command=ajouter_produit).pack(pady=5)
+    tk.Button(main_menu_window, text="Supprimer un produit", command=supprimer_produit).pack(pady=5)
+    tk.Button(main_menu_window,text="Trier par prix", command=trier_par_prix).pack(pady=5)
+    tk.Button(main_menu_window,text="Rechercher un produit", command=recherche_produit).pack(pady=5)
+    tk.Button(main_menu_window, text="Quitter", command=main_menu_window.destroy).pack(pady=5)
+
+
+
 
 # def change_pw():
 #     email = input("Entrez votre email : ")
@@ -215,12 +264,12 @@ def show_main_menu():
 #     print("Email ou mot de passe incorrect.")
 #     return False
 
-def access_login(label):
+def access_login():
     if is_logged_in:
         show_main_menu()
     else:
-        label.config(text="Accès refusé")
-        messagebox.showwarning("Accès interdit. Réessayer.")
+        messagebox.showwarning("Accès interdit. Réessayer.",
+                               "Veuillez vous connecter ou créer un compte.")
         
 
 def main_window():
@@ -267,6 +316,3 @@ def main_window():
 
 if __name__ == "__main__":
     main_window()
-
-login_button = tk.Button(text="Accéder au menu principal", command=show_main_menu)
-login_button.pack(pady=20)
