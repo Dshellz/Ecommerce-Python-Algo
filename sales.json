@@ -1,0 +1,37 @@
+[
+    {
+        "Produit": "Piano",
+        "Ventes": 10,
+        "Date": "2025-01-10 13:30:24",
+        "Quantité": 58,
+        "Prix": 185.89
+    },
+    {
+        "Produit": "Guitare",
+        "Ventes": 5,
+        "Date": "2025-01-09 11:45:32",
+        "Quantité": 6,
+        "Prix": 500.99
+    },
+    {
+        "Produit": "Harmonica",
+        "Ventes": 3,
+        "Date": "2025-01-09 19:49:20",
+        "Quantité": 8,
+        "Prix": 85.99
+    },
+    {
+        "Produit": "Pomme de terre",
+        "Ventes": 58,
+        "Date": "2025-01-11 15:19:45",
+        "Quantité": 142,
+        "Prix": 2.5
+    },
+    {
+        "Produit": "Chocolat",
+        "Ventes": 8,
+        "Date": "2025-01-10 18:25:22",
+        "Quantité": 25,
+        "Prix": 3.6
+    }
+]

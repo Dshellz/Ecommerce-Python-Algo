@@ -1,6 +1,6 @@
-nom,produit,quantite,prix
-Moby,Piano,58,185.89
-Moby,Guitare,5,500.99
-Moby,Harmonica,8,85.99
-Marie,Pomme de terre,142,2.5
-Pierre,Chocolat,25,3.6
+nom,produit,quantite,prix,date
+Moby,Piano,58,185.89,2025-01-09 17:37:39
+Moby,Guitare,6,500.99,2025-01-09 15:37:39
+Moby,Harmonica,8,85.99,2025-01-08 12:37:39
+Marie,Pomme de terre,142,2.5,2025-01-09 19:37:39
+Pierre,Chocolat,25,3.6,2025-01-09 18:40:50

@@ -9,7 +9,7 @@ import pandas as pd
 from commercants import filtre_nom
 import tkinter as tk
 from tkinter import messagebox
-
+import datetime 
 
 is_logged_in = False
 logged_user = None
@@ -81,21 +81,21 @@ def login(email_entry, password_entry, result_label):
 def show_main_menu():
     main_menu_window = tk.Toplevel()
     main_menu_window.title("Menu Principal")
-    main_menu_window.geometry("350x250")
+    main_menu_window.geometry("350x290")
 
     def afficher_produits():
         show_prod = tk.Tk()
         show_prod.title("Produits")
-        show_prod.geometry("450x250")
+        show_prod.geometry("600x250")
 
-        text_area = tk.Text(show_prod, height=15, width=50)
+        text_area = tk.Text(show_prod, height=25, width=85, fg="blue")
         text_area.pack(padx=10, pady=10)
 
         with open('produits.csv', newline='') as csvfile:
             reader = csv.DictReader(csvfile)
             produits = []
             for row in reader:
-                produits.append (f" {row['nom']}: {row['produit']}: {row['quantite']} en stock, Prix = {row['prix']} €")
+                produits.append (f" {row['nom']}: {row['produit']} {row['quantite']} en stock, Prix = {row['prix']} € {row['date']}")
         
         text_area.delete(1.0, tk.END)
         text_area.insert(tk.END, "\n".join(produits))
@@ -108,14 +108,17 @@ def show_main_menu():
             produit = produit_entry.get()
             quantite = quantite_entry.get()
             prix = prix_entry.get()
+
+            date = datetime.datetime.now()
+            formatted_date = date.strftime("%Y-%m-%d %H:%M:%S")
             with open('produits.csv', mode='a', newline='') as file:
                 writer = csv.writer(file)
-                writer.writerow([nom, produit, quantite, prix])
+                writer.writerow([nom, produit, quantite, prix, formatted_date])
             messagebox.showinfo("Succès", "Produit ajouté avec succès.")
             ajouter_window.destroy()
 
         ajouter_window = tk.Toplevel(main_menu_window)
-        ajouter_window.geometry("270x190")
+        ajouter_window.geometry("270x220")
         ajouter_window.title("Ajouter un produit")
         
         tk.Label(ajouter_window, text="Nom du commerçant:").pack()
@@ -134,6 +137,8 @@ def show_main_menu():
         prix_entry = tk.Entry(ajouter_window)
         prix_entry.pack()
 
+        tk.Button(ajouter_window, text="Ajouter produit", command=save_product).pack()
+
     def supprimer_produit():
         def confirmer_suppression():
             produit_a_supprimer = produit_entry.get()
@@ -150,7 +155,7 @@ def show_main_menu():
             
             if produit_trouve:
                 with open('produits.csv', 'w', newline='') as csvfile:
-                    fieldnames = ['nom', 'produit', 'quantite', 'prix']
+                    fieldnames = ['nom', 'produit', 'quantite', 'prix', 'date']
                     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                     writer.writeheader()
                     for produit in produits_restants:
@@ -178,17 +183,38 @@ def show_main_menu():
             trier_window.title("Produits triés par prix")
             trier_window.geometry("450x250")
 
-            text_area = tk.Text(trier_window, height=15, width=50)
+            text_area = tk.Text(trier_window, height=15, width=90)
             text_area.pack(padx=10, pady=10)
 
             produits_tries = []
             for _, row in df_sorted.iterrows():
-                produits_tries.append(f"{row['nom']}: {row['produit']}: {row['quantite']} en stock, Prix = {row['prix']} €")
+                produits_tries.append(f"{row['nom']}: {row['produit']}: {row['quantite']} en stock, Prix = {row['prix']} € {row['date']}")
             
             text_area.delete(1.0, tk.END)
             text_area.insert(tk.END, "\n".join(produits_tries))
-        except Exception as e:
-            messagebox.showerror("Erreur", f"Une erreur est survenue : {e}")    
+        except Exception as error:
+            messagebox.showerror("Erreur", f"Une erreur est survenue : {error}")   
+
+    def trier_par_date():
+        try:
+            df = pd.read_csv('produits.csv', on_bad_lines='skip')
+            df_sorted = df.sort_values(by="date", ascending=True, kind="quicksort")
+            
+            trier_window = tk.Toplevel(main_menu_window)
+            trier_window.title("Produits triés par prix")
+            trier_window.geometry("650x250")
+
+            text_area = tk.Text(trier_window, height=15, width=90)
+            text_area.pack(padx=10, pady=10)
+
+            produits_tries = []
+            for _, row in df_sorted.iterrows():
+                produits_tries.append(f"{row['nom']}: {row['produit']}: {row['quantite']} en stock, Prix = {row['prix']} € {row['date']}")
+            
+            text_area.delete(1.0, tk.END)
+            text_area.insert(tk.END, "\n".join(produits_tries))
+        except Exception as error:
+            messagebox.showerror("Erreur", f"Une erreur est survenue : {error}")   
     
     def recherche_produit():
         def effectuer_recherche():
@@ -214,55 +240,99 @@ def show_main_menu():
         produit_entry = tk.Entry(recherche_window)
         produit_entry.pack(pady=5)
         tk.Button(recherche_window, text="Rechercher", command=effectuer_recherche).pack(pady=10)
+    
+    def change_pw():
+        def suppression(email_entry, old_password_entry, new_password_entry, new_password2_entry, result_label):
+            email = email_entry.get()
+            old_password = old_password_entry.get()
 
+            with open("users.csv", mode="r", encoding='utf-8') as file:
+                rows = list(csv.reader(file))
+            for row in rows:
+                reg_name = row[0]
+                reg_pass = row[1]
+        
+                if email == reg_name:
+                    pw_hash = hashlib.sha1(old_password.encode('utf-8')).hexdigest().upper()
+                    if pw_hash == reg_pass:
+                
+                        new_password = new_password_entry.get()
+                        new_password2 = new_password2_entry.get()
+                
+                        if new_password == new_password2:
+                            salt = genere_salage()
+                            pw_hash = hashlib.sha1(new_password.encode('utf-8')).hexdigest().upper()
+                            prefix = pw_hash[:5]
+                            suffix = pw_hash[5:]
+
+                            url = f"https://api.pwnedpasswords.com/range/{prefix}"
+                            response = requests.get(url)
+                            if response.status_code != 200:
+                                raise RuntimeError(f"Error: {response.status_code}")
+
+                            found = False
+                            hashes = (line.split(':') for line in response.text.splitlines())
+                            for returned_suffix, count in hashes:
+                                if returned_suffix == suffix:
+                                    result_label.config(text=f"Mot de passe trop peu sécurisé ! Il a été compromis {count} fois.\nVeuillez mettre un mot de passe plus sécurisé.")
+                                    mdp_compromis()
+                                    return
+                                
+                            with open("users.csv", mode="r+", encoding='utf-8', newline="") as file:
+                                writer = csv.writer(file, delimiter=",")
+                                for r in rows:
+                                    if r[0] == email:
+                                        writer.writerow([r[0], pw_hash, salt])
+                                    else:
+                                        writer.writerow(r)
+                    
+                            messagebox.showinfo("Modification effectuée",
+                                                "Votre mot de passe à été modifié avec succès !")
+                            changepw_window.destroy()
+                            return True
+                        else:
+                            result_label.config(text="Les mots de passe ne correspondent pas. Veuillez réessayer.")
+                            messagebox.showwarning("Erreur", "Les mots de passe ne correspondent pas.")
+                            
+                            return
+            messagebox.showwarning("Erreur",
+                                   "Email ou mot de passe incorrect")
+            return False
+        
+        changepw_window = tk.Toplevel(main_menu_window)
+        changepw_window.geometry("350x250")
+        changepw_window.title("Changement de mot de passe")
+
+        tk.Label(changepw_window,text="Email").pack()
+        email_entry = tk.Entry(changepw_window)
+        email_entry.pack()
+
+        tk.Label(changepw_window,text="Ancien mot de passe").pack()
+        old_password_entry = tk.Entry(changepw_window, show="*")
+        old_password_entry.pack()
+
+        tk.Label(changepw_window,text="Nouveau mot de passe").pack()
+        new_password_entry = tk.Entry(changepw_window, show="*")
+        new_password_entry.pack()
+
+        tk.Label(changepw_window,text="Confirmer votre nouveau mot de passe").pack()
+        new_password2_entry = tk.Entry(changepw_window, show="*")
+        new_password2_entry.pack()
+
+        result_label = tk.Label(changepw_window,text="", fg="red")
+        result_label.pack()
+
+        submitPw = tk.Button(changepw_window,text="Appliquer les changements", command=lambda: suppression(email_entry, old_password_entry, new_password_entry, new_password2_entry, result_label), fg="red")
+        submitPw.pack()
 
     tk.Button(main_menu_window, text="Afficher les produits", command=afficher_produits).pack(pady=5)
     tk.Button(main_menu_window, text="Ajouter un produit", command=ajouter_produit).pack(pady=5)
     tk.Button(main_menu_window, text="Supprimer un produit", command=supprimer_produit).pack(pady=5)
     tk.Button(main_menu_window,text="Trier par prix", command=trier_par_prix).pack(pady=5)
+    tk.Button(main_menu_window,text="Trier par date", command=trier_par_date).pack(pady=5)
     tk.Button(main_menu_window,text="Rechercher un produit", command=recherche_produit).pack(pady=5)
+    tk.Button(main_menu_window,text="Changer de mot de passe",command=change_pw).pack(pady=5)
     tk.Button(main_menu_window, text="Quitter", command=main_menu_window.destroy).pack(pady=5)
-
-
-
-
-# def change_pw():
-#     email = input("Entrez votre email : ")
-#     old_password = input("Entrez votre ancien mot de passe : ")
-
-#     with open("users.csv", mode="r", encoding='utf-8') as file:
-#         rows = list(csv.reader(file))
-#     for row in rows:
-#         reg_name = row[0]
-#         reg_pass = row[1]
-        
-#         if email == reg_name:
-#             pw_hash = hashlib.sha1(old_password.encode('utf-8')).hexdigest().upper()
-#             if pw_hash == reg_pass:
-#                 print("Ancien mot de passe validé.")
-                
-#                 new_password = input("Entrez votre nouveau mot de passe : ")
-#                 new_password2 = input("Confirmez votre nouveau mot de passe : ")
-                
-#                 if new_password == new_password2:
-#                     salt = genere_salage()
-#                     pw_hash = hashlib.sha1(new_password.encode('utf-8')).hexdigest().upper()
-                    
-#                     with open("users.csv", mode="w", encoding='utf-8', newline="") as file:
-#                         writer = csv.writer(file, delimiter=",")
-#                         for r in rows:
-#                             if r[0] == email:
-#                                 writer.writerow([r[0], pw_hash, salt])
-#                             else:
-#                                 writer.writerow(r)
-                    
-#                     print("Votre mot de passe a été modifié avec succès !")
-#                     return True
-#                 else:
-#                     print("Les mots de passe ne correspondent pas. Veuillez réessayer.")
-#                     return change_pw()
-#     print("Email ou mot de passe incorrect.")
-#     return False
 
 def access_login():
     if is_logged_in:
@@ -271,7 +341,6 @@ def access_login():
         messagebox.showwarning("Accès interdit. Réessayer.",
                                "Veuillez vous connecter ou créer un compte.")
         
-
 def main_window():
     window = tk.Tk()
     window.title("Authenfication")
