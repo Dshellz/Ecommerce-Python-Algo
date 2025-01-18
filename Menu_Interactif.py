@@ -9,7 +9,11 @@ import pandas as pd
 from commercants import filtre_nom
 import tkinter as tk
 from tkinter import messagebox
+from tkinter.ttk import *
+from tkinter import ttk 
 import datetime 
+import matplotlib.pyplot as plt
+import json
 
 is_logged_in = False
 logged_user = None
@@ -79,16 +83,16 @@ def login(email_entry, password_entry, result_label):
 
 
 def show_main_menu():
-    main_menu_window = tk.Toplevel()
+    main_menu_window = tk.Toplevel(bg='grey')
     main_menu_window.title("Menu Principal")
-    main_menu_window.geometry("350x290")
+    main_menu_window.geometry("350x360")
 
     def afficher_produits():
         show_prod = tk.Tk()
         show_prod.title("Produits")
         show_prod.geometry("600x250")
 
-        text_area = tk.Text(show_prod, height=25, width=85, fg="blue")
+        text_area = tk.Text(show_prod, height=25, width=85, fg="blue", bg="grey")
         text_area.pack(padx=10, pady=10)
 
         with open('produits.csv', newline='') as csvfile:
@@ -173,6 +177,54 @@ def show_main_menu():
         produit_entry = tk.Entry(supprimer_window)
         produit_entry.pack()
         tk.Button(supprimer_window, text="Supprimer", command=confirmer_suppression).pack()
+    
+    def modifier_quantite():
+        def update_quantity():
+            produit = produit_entry.get()
+            nouvelle_quantite = quantite_entry.get()
+
+            if not nouvelle_quantite.isdigit():
+                messagebox.showerror("Erreur", "La quantité doit être un nombre.")
+                return
+
+            nouvelle_quantite = int(nouvelle_quantite)
+            produit_trouve = False
+
+        # Lire et modifier les données dans le fichier CSV
+            with open('produits.csv', 'r', newline='') as file:
+                reader = csv.reader(file)
+                lignes = list(reader)
+
+        # Modifier la quantité si le produit existe
+            for ligne in lignes:
+                if ligne[1] == produit:  # Vérifie si le produit correspond
+                    ligne[2] = str(nouvelle_quantite)  # Met à jour la quantité
+                    produit_trouve = True
+                    break
+
+            if produit_trouve:
+            # Réécrire le fichier avec la quantité mise à jour
+                with open('produits.csv', 'w', newline='') as file:
+                    writer = csv.writer(file)
+                    writer.writerows(lignes)
+                messagebox.showinfo("Succès", "Quantité mise à jour avec succès.")
+                modifier_window.destroy()
+            else:
+                messagebox.showerror("Erreur", "Produit non trouvé.")
+    
+    # Créer une fenêtre pour la modification
+        modifier_window = tk.Toplevel(main_menu_window)
+        modifier_window.geometry("270x180")
+        modifier_window.title("Modifier la quantité")
+    
+        tk.Label(modifier_window, text="Nom du produit:").pack()
+        produit_entry = tk.Entry(modifier_window)
+        produit_entry.pack()
+    
+        tk.Label(modifier_window, text="Nouvelle quantité:").pack()
+        quantite_entry = tk.Entry(modifier_window)
+        quantite_entry.pack()
+        tk.Button(modifier_window, text="Modifier quantité", command=update_quantity).pack(pady=10)
 
     def trier_par_prix():
         try:
@@ -241,6 +293,22 @@ def show_main_menu():
         produit_entry.pack(pady=5)
         tk.Button(recherche_window, text="Rechercher", command=effectuer_recherche).pack(pady=10)
     
+    def graphique_ventes():
+        with open('sales.json', 'r') as f:
+            data = json.load(f)
+        df = pd.DataFrame(data)
+        df_sorted = df.sort_values(by='Ventes', ascending=False)
+        plt.figure(figsize=(10,6))
+        colors = ['#4CAF50', '#FF5722', '#2196F3', '#FFC107', '#9C27B0']
+        plt.bar(df_sorted['Produit'], df_sorted['Ventes'], color=colors, edgecolor='black')
+        plt.title('Produits les plus vendus', fontsize=16, fontweight='bold', color='#333')
+        plt.xlabel('Produits', fontsize=12, fontweight='bold')
+        plt.ylabel('Ventes', fontsize=12, fontweight='bold')
+        # produits = ['Piano', 'Guitare', 'Harmonica', 'Pomme de terre', 'Chocolat']
+        # ventes = [10, 5, 3, 20, 8]
+        # plt.bar(produits, ventes)
+        plt.show()
+
     def change_pw():
         def suppression(email_entry, old_password_entry, new_password_entry, new_password2_entry, result_label):
             email = email_entry.get()
@@ -324,15 +392,21 @@ def show_main_menu():
 
         submitPw = tk.Button(changepw_window,text="Appliquer les changements", command=lambda: suppression(email_entry, old_password_entry, new_password_entry, new_password2_entry, result_label), fg="red")
         submitPw.pack()
-
-    tk.Button(main_menu_window, text="Afficher les produits", command=afficher_produits).pack(pady=5)
-    tk.Button(main_menu_window, text="Ajouter un produit", command=ajouter_produit).pack(pady=5)
-    tk.Button(main_menu_window, text="Supprimer un produit", command=supprimer_produit).pack(pady=5)
-    tk.Button(main_menu_window,text="Trier par prix", command=trier_par_prix).pack(pady=5)
-    tk.Button(main_menu_window,text="Trier par date", command=trier_par_date).pack(pady=5)
-    tk.Button(main_menu_window,text="Rechercher un produit", command=recherche_produit).pack(pady=5)
-    tk.Button(main_menu_window,text="Changer de mot de passe",command=change_pw).pack(pady=5)
-    tk.Button(main_menu_window, text="Quitter", command=main_menu_window.destroy).pack(pady=5)
+    
+    style = ttk.Style() #créer le style object
+    style.configure('TButton', font = 
+                    ('calibri', 10, 'bold'), foreground = 'black')
+    
+    ttk.Button(main_menu_window, text="Afficher les produits", style ='TButton', command=afficher_produits).pack(pady=5)
+    ttk.Button(main_menu_window, text="Ajouter un produit", style ='TButton', command=ajouter_produit).pack(pady=5)
+    ttk.Button(main_menu_window, text="Supprimer un produit", style ='TButton', command=supprimer_produit).pack(pady=5)
+    ttk.Button(main_menu_window,text="Modifier la quantitée", style ='TButton', command=modifier_quantite).pack(pady=5)
+    ttk.Button(main_menu_window,text="Trier par prix", style ='TButton', command=trier_par_prix).pack(pady=5)
+    ttk.Button(main_menu_window,text="Trier par date", style ='TButton', command=trier_par_date).pack(pady=5)
+    ttk.Button(main_menu_window,text="Rechercher un produit", style ='TButton', command=recherche_produit).pack(pady=5)
+    ttk.Button(main_menu_window,text="Voir les produits les plus vendus", style ='TButton', command=graphique_ventes).pack(pady=5)
+    ttk.Button(main_menu_window,text="Changer de mot de passe", style ='TButton',command=change_pw).pack(pady=5)
+    ttk.Button(main_menu_window, text="Quitter", style ='TButton', command=main_menu_window.destroy).pack(pady=5)
 
 def access_login():
     if is_logged_in:
