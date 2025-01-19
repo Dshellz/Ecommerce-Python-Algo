@@ -189,21 +189,16 @@ def show_main_menu():
 
             nouvelle_quantite = int(nouvelle_quantite)
             produit_trouve = False
-
-        # Lire et modifier les données dans le fichier CSV
             with open('produits.csv', 'r', newline='') as file:
                 reader = csv.reader(file)
                 lignes = list(reader)
-
-        # Modifier la quantité si le produit existe
             for ligne in lignes:
-                if ligne[1] == produit:  # Vérifie si le produit correspond
-                    ligne[2] = str(nouvelle_quantite)  # Met à jour la quantité
+                if ligne[1] == produit:
+                    ligne[2] = str(nouvelle_quantite)
                     produit_trouve = True
                     break
 
             if produit_trouve:
-            # Réécrire le fichier avec la quantité mise à jour
                 with open('produits.csv', 'w', newline='') as file:
                     writer = csv.writer(file)
                     writer.writerows(lignes)
@@ -212,9 +207,8 @@ def show_main_menu():
             else:
                 messagebox.showerror("Erreur", "Produit non trouvé.")
     
-    # Créer une fenêtre pour la modification
         modifier_window = tk.Toplevel(main_menu_window)
-        modifier_window.geometry("270x180")
+        modifier_window.geometry("270x150")
         modifier_window.title("Modifier la quantité")
     
         tk.Label(modifier_window, text="Nom du produit:").pack()
@@ -233,7 +227,7 @@ def show_main_menu():
             
             trier_window = tk.Toplevel(main_menu_window)
             trier_window.title("Produits triés par prix")
-            trier_window.geometry("450x250")
+            trier_window.geometry("650x250")
 
             text_area = tk.Text(trier_window, height=15, width=90)
             text_area.pack(padx=10, pady=10)
